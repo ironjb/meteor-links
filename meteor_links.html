@@ -1,14 +1,33 @@
 <head>
-  <title>meteor_links</title>
+	<title>meteor_links</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
 
-  {{> hello}}
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="home">
+	<button>Click Me</button>
+	<p>You've pressed the button {{counter}} times.</p>
+	<p><a href="/admin">Admin</a></p>
+	<div>MongoDB data structure idea:</div>
+	<pre>
+linksCollection: [
+	{ label: 'W3Schools', url: 'http://www.w3schools.com', createdBy: USER_ID, isPublicLink: true }
+]
+
+userCollection: [
+	{ name: 'Joe Bell', groupId: SET_TO_GROUP_ID }
+]
+
+groupCollection: [
+	{ name: 'Admin', isAdmin: true }
+	{ name: 'User', isAdmin: false }
+]
+	</pre>
+</template>
+
+<template name="admin">
+	<p>admin pages stuff goes here</p>
+	<p><a href="/">back</a></p>
 </template>

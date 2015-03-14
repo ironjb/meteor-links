@@ -1,23 +1,26 @@
+Router.route('/', function () { this.render('home'); });
+Router.route('admin', function () { this.render('admin'); });
+
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault('counter', 0);
+	// counter starts at 0
+	Session.setDefault('counter', 0);
 
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get('counter');
-    }
-  });
+	Template.home.helpers({
+		counter: function () {
+			return Session.get('counter');
+		}
+	});
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set('counter', Session.get('counter') + 1);
-    }
-  });
+	Template.home.events({
+		'click button': function () {
+			// increment the counter when button is clicked
+			Session.set('counter', Session.get('counter') + 1);
+		}
+	});
 }
 
 if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // code to run on server at startup
-  });
+	Meteor.startup(function () {
+		// code to run on server at startup
+	});
 }
