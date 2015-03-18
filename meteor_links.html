@@ -1,17 +1,49 @@
 <head>
-	<title>meteor_links</title>
+	<title>Link Project</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-
 </body>
 
 <template name="home">
-	<button>Click Me</button>
-	<p>You've pressed the button {{counter}} times.</p>
-	<p><a href="/admin">Admin</a></p>
-	<div>MongoDB data structure idea:</div>
-	<pre>
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Links Project</h1>
+			<p>This probject is to test out the ability to have a user sign into their account and see their own custom links as well as links for everyone (in a group???).</p>
+		</div>
+	</div>
+	<div class="container">
+		<p>Some Notes:</p>
+		<ul>
+			<li>
+				May decide to use custom accoun login. See:<br />
+				<a href="http://blog.benmcmahen.com/post/41741539120/building-a-customized-accounts-ui-for-meteor">http://blog.benmcmahen.com/post/41741539120/building-a-customized-accounts-ui-for-meteor</a>
+			</li>
+			<li>
+				Using iron:router for routing<br />
+				<a href="https://github.com/iron-meteor/iron-router">https://github.com/iron-meteor/iron-router</a>
+			</li>
+			<li>
+				Modify <strong>client/css/lib/custom.bootstrap.json</strong> if additional bootstrap components are needed.<br />
+				<a target="_blank" href="http://www.manuel-schoebel.com/blog/meteorjs-and-twitter-bootstrap---the-right-way#!">http://www.manuel-schoebel.com/blog/meteorjs-and-twitter-bootstrap---the-right-way#!</a><br />
+				<a target="_blank" href="https://atmospherejs.com/nemo64/bootstrap">https://atmospherejs.com/nemo64/bootstrap</a>
+			</li>
+			<li>
+				Add a Bootswatch.com theme later?<br />
+				<a target="_blank" href="https://bootswatch.com/">https://bootswatch.com/</a><br />
+				<a target="_blank" href="http://blog.jongallant.com/2013/08/bootswatch-mvc.html">http://blog.jongallant.com/2013/08/bootswatch-mvc.html</a><br />
+
+			</li>
+		</ul>
+		<hr />
+		<p>
+			<button type="button" class="btn btn-xs btn-default">Click Me</button>
+		</p>
+		<p>You've pressed the button {{counter}} times.</p>
+		<p><a href="/admin">Admin</a></p>
+		<div>MongoDB data structure idea:</div>
+		<pre>
 linksCollection: [
 	{ label: 'W3Schools', url: 'http://www.w3schools.com', createdBy: USER_ID, isPublicLink: true }
 ]
@@ -24,10 +56,39 @@ groupCollection: [
 	{ name: 'Admin', isAdmin: true }
 	{ name: 'User', isAdmin: false }
 ]
-	</pre>
+		</pre>
+	</div>
 </template>
 
 <template name="admin">
 	<p>admin pages stuff goes here</p>
 	<p><a href="/">back</a></p>
+</template>
+
+<template name="main_layout">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#" class="navbar-brand">Linky</a>
+			</div>
+			<div id="navbar" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#">link 1</a></li>
+					<li><a href="#">link 2</a></li>
+					<li><a href="#">link 3</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<article>
+		{{> yield}}
+	</article>
+	<footer>
+		<div class="container">footer</div>
+	</footer>
 </template>

@@ -1,4 +1,5 @@
-Router.route('/', function () { this.render('home'); });
+// Router.configure({layoutTemplate: 'MainLayout'});
+Router.route('/', function () { this.layout('main_layout'); this.render('home'); });
 Router.route('admin', function () { this.render('admin'); });
 
 if (Meteor.isClient) {
