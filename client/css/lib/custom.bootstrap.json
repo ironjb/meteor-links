@@ -29,11 +29,11 @@
   "panels":               false,
   "responsive-embed":     false,
   "wells":                false,
-  "close":                false,
+  "close":                true,
 
   "component-animations": true,
   "dropdowns":            true,
-  "modals":               false,
+  "modals":               true,
   "tooltip":              false,
   "popovers":             false,
   "carousel":             false,
