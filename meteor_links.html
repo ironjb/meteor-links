@@ -82,8 +82,11 @@ groupCollection: [
 					<li><a href="#">link 2</a></li>
 					<li><a href="#">link 3</a></li>
 				</ul>
+				<!-- <div class="navbar-text navbar-right">Welcome</div> -->
+				{{#if currentUser}}
+				<div class="navbar-text navbar-right">Welcome ??? &nbsp; &nbsp; <a href="#" id="logoutButton">Logout</a></div>
+				{{else}}
 				<div class="navbar-form navbar-right">
-					<!-- <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#loginModal">Sign In</button> -->
 					<div class="btn-group">
 						<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Account <span class="caret"></span></button>
 						<ul class="dropdown-menu">
@@ -92,6 +95,7 @@ groupCollection: [
 						</ul>
 					</div>
 				</div>
+				{{/if}}
 			</div>
 		</div>
 	</nav>
@@ -150,14 +154,26 @@ groupCollection: [
 						<h4 class="modal-title">Registration</h4>
 					</div>
 					<div class="modal-body">
+						{{#if registerMainErrMsg}}
+						<div class="text-danger">*{{registerMainErrMsg}}</div>
+						{{/if}}
 						<div class="form-group">
 							<input type="text" id="registerEmail" name="registerEmail" class="form-control" placeholder="E-mail" />
+							{{#if registerEmailMsg}}
+							<div class="text-danger">*{{registerEmailMsg}}</div>
+							{{/if}}
 						</div>
 						<div class="form-group">
 							<input type="password" id="registerPassword" name="registerPassword" class="form-control" placeholder="Password" />
+							{{#if registerPasswordMsg}}
+							<div class="text-danger">*{{registerPasswordMsg}}</div>
+							{{/if}}
 						</div>
 						<div class="form-group">
 							<input type="password" id="registerConfirmPassword" name="registerConfirmPassword" class="form-control" placeholder="Confirm Password" />
+							{{#if registerConfirmPasswordMsg}}
+							<div class="text-danger">*{{registerConfirmPasswordMsg}}</div>
+							{{/if}}
 						</div>
 					</div>
 					<div class="modal-footer">

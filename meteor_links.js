@@ -12,14 +12,25 @@ function isValidPassword (password) {
 }
 
 function clearLoginValidationMessages() {
+	Session.set('loginMainErrMessage', null);
 	Session.set('loginEmailMessage', null);
 	Session.set('loginPasswordMessage', null);
+}
+
+function clearRegisterValidationMessages () {
+	Session.set('registerMainErrMessage', null);
+	Session.set('registerEmailMessage', null);
+	Session.set('registerPasswordMessage', null);
+	Session.set('registerConfirmPasswordMessage', null);
 }
 
 if (Meteor.isClient) {
 	Template.mainLayout.events({
 		'click #loginButton': function (event, target) {
 			clearLoginValidationMessages();
+		},
+		'click #registerButton': function (event, target) {
+			clearRegisterValidationMessages();
 		}
 	});
 
@@ -40,10 +51,11 @@ if (Meteor.isClient) {
 			, loginPassword = event.target.loginPassword.value;
 			// window.console.log && console.log(loginEmail, loginPassword);
 
-			// Trim and validate fields here
+			// Validate fields here
 			var passedLoginFieldValidation = function () {
 				var validEmail = isValidEmail(loginEmail);
 				var validPassword = isValidPassword(loginPassword);
+
 				if (!validEmail) {
 					// window.console.log && console.log('set message');
 					Session.set('loginEmailMessage', 'E-mail address is not valid!');
@@ -51,12 +63,14 @@ if (Meteor.isClient) {
 				} else {
 					Session.set('loginEmailMessage', null);
 				}
+
 				if (!validPassword) {
 					Session.set('loginPasswordMessage', 'Password must be at least 6 characters long!');
 					// return false;
 				} else {
 					Session.set('loginPasswordMessage', null);
 				}
+
 				// window.console.log && console.log('passedLoginFieldValidation got to true');
 				return (validEmail && validPassword);
 			};
@@ -68,12 +82,29 @@ if (Meteor.isClient) {
 				Meteor.loginWithPassword(loginEmail, loginPassword, function (err) {
 					if (err) {
 						// Login failed.
+						console.log('login failed. Error: ', err);
 					} else {
 						// User logged in.
+						console.log('successful login');
 					}
 				});
 			}
 			return false;
+		}
+	});
+
+	Template.registerModalTemplate.helpers({
+		'registerMainErrMsg': function () {
+			return Session.get('registerMainErrMessage');
+		},
+		'registerEmailMsg': function () {
+			return Session.get('registerEmailMessage');
+		},
+		'registerPasswordMsg': function () {
+			return Session.get('registerPasswordMessage');
+		},
+		'registerConfirmPasswordMsg': function () {
+			return Session.get('registerConfirmPasswordMessage');
 		}
 	});
 
@@ -88,20 +119,51 @@ if (Meteor.isClient) {
 			, registerConfirmPassword = event.target.registerConfirmPassword.value;
 			// window.console.log && console.log(registerEmail, registerPassword, registerConfirmPassword);
 
-			// Trim and validate fields here
-			var passedRegistrationValidation = true;
+			// Validate fields here
+			var passedRegistrationValidation = function () {
+				var validEmail = isValidEmail(registerEmail);
+				var validPassword = isValidPassword(registerPassword);
+				var passwordMatch = registerPassword === registerConfirmPassword;
+
+				Session.set('registerMainErrMessage', null);
+
+				if (!validEmail) {
+					Session.set('registerEmailMessage', 'E-mail address is not valid!');
+				} else {
+					Session.set('registerEmailMessage', null);
+				}
+
+				if (!validPassword) {
+					Session.set('registerPasswordMessage', 'Password must be at least 6 characters long!');
+				} else {
+					Session.set('registerPasswordMessage', null);
+				}
+
+				if (!passwordMatch) {
+					Session.set('registerConfirmPasswordMessage', 'Passwords don\'t match');
+				} else {
+					Session.set('registerConfirmPasswordMessage', null);
+				}
+
+				return (validEmail && validPassword && passwordMatch);
+			};
 
 			// If validation passes, supply the appropriate fields to the
 			// Accounts.createUser() function.
-			if (passedRegistrationValidation) {
+			if (passedRegistrationValidation()) {
 				Accounts.createUser({
 					email: registerEmail,
 					password: registerPassword
 				}, function (err) {
 					if (err) {
 						// Inform the user that the account creation failed
+						// console.log('registration failed Error: ', err.reason);
+						Session.set('registerMainErrMessage', err.reason);
 					} else {
 						// Success. Account has been created and logged in.
+						// console.log('yay... registration worked!');
+						Session.set('registerMainErrMessage', null);
+						$('#registerModal').modal('hide');
 					}
 				});
 			}
