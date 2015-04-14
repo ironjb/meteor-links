@@ -1,1 +1,25 @@
-body { padding-top: 50px; }
+@import "lib/custom.bootstrap.import.less";
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	// Navbar and footer height
+	margin: 50px 0;
+}
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/* Set the fixed height of the footer here */
+	height: 50px;
+}
+.footer-default {
+	background-color: @navbar-default-bg;
+	color: @navbar-default-color;
+}
+.footer-inverse {
+	background-color: @navbar-inverse-bg;
+	color: @navbar-inverse-color;
+}

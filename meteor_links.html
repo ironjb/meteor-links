@@ -60,11 +60,6 @@ groupCollection: [
 	</div>
 </template>
 
-<template name="admin">
-	<p>admin pages stuff goes here</p>
-	<p><a href="/">back</a></p>
-</template>
-
 <template name="mainLayout">
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
@@ -83,17 +78,19 @@ groupCollection: [
 					<li><a href="#">link 3</a></li>
 					<li><a href="#">link 4</a></li>
 					<li><a href="#">link 5</a></li>
-					<li><a href="#">link 6</a></li>
+					{{#if currentUser.profile.isAdmin}}
+					<li><a href="/admin">Admin</a></li>
+					{{/if}}
 				</ul>
 				{{#if currentUser}}
-				<div class="nav navbar-text navbar-right">Welcome {{currentUser.username}} &nbsp; &nbsp; <a href="#" id="logoutButton">Logout</a></div>
+				<div class="nav navbar-text navbar-right">Welcome {{currentUser.profile.firstname}} &nbsp; &nbsp; <a href="#" class="logoutButton">Logout</a></div>
 				{{else}}
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="#" id="loginButton" data-toggle="modal" data-target="#loginModal">Sign In</a></li>
-							<li><a href="#" id="registerButton" data-toggle="modal" data-target="#registerModal">Register</a></li>
+							<li><a href="#" class="loginButton" data-toggle="modal" data-target="#loginModal">Sign In</a></li>
+							<!-- <li><a href="#" id="registerButton" class="registerButton" data-toggle="modal" data-target="#registerModal">Register</a></li> -->
 						</ul>
 					</li>
 				</ul>
@@ -117,11 +114,45 @@ groupCollection: [
 	<article>
 		{{> yield}}
 	</article>
-	<footer>
-		<div class="container">footer</div>
+	<footer class="footer footer-inverse">
+		<div class="container">
+			footer
+		</div>
 	</footer>
 	{{> loginModalTemplate}}
 	{{> registerModalTemplate}}
+</template>
+
+<template name="admin">
+	<div class="container">
+		<h1>Admin Page</h1>
+		<p><a href="/admin/users" class="btn btn-default">Users List Management</a></p>
+	</div>
+</template>
+
+<template name="userslist">
+	<div class="container">
+		<h1>Users List</h1>
+		<p>You should see a list of users below.</p>
+		<p><a href="#" class="registerButton btn btn-primary" data-toggle="modal" data-target="#registerModal">Create New User</a></p>
+	</div>
+</template>
+
+<template name="error">
+	<div class="container">
+		<h1>Error:</h1>
+		<p>An error occured!</p>
+		<p><a href="/" class="btn btn-primary">Return to Home Page</a></p>
+	</div>
+</template>
+
+<template name="notAdminError">
+	<div class="container">
+		<h1>Administrators Only!</h1>
+		<p>You must log in as an Administrator to access this page!</p>
+		<p>You will be redirected to the home page in just a moment!</p>
+		<p><a href="/" class="btn btn-primary">Return to Home Page</a></p>
+	</div>
 </template>
 
 <template name="loginModalTemplate">
@@ -169,7 +200,7 @@ groupCollection: [
 				<form action="action" id="registerForm" name="registerForm">
 					<div class="modal-header">
 						<button class="close" type="button" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Registration</h4>
+						<h4 class="modal-title">Create Account</h4>
 					</div>
 					<div class="modal-body">
 						{{#if registerMainErrMsg}}
