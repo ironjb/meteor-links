@@ -3,14 +3,12 @@
 function isValidUserName (username) {
 	var usernamePattern = /^([a-zA-Z])([a-zA-Z0-9_]{2,})*$/;
 	var usernameValid = usernamePattern.test(username);
-	// console.log('username: ', username, v);
 	return usernameValid;
 }
 
 function isValidName (name) {
 	var namePattern = /^[a-zA-Z ]{3,}$/;
 	var nameValid = namePattern.test(name);
-	// console.log('nameValid', nameValid, name);
 	return nameValid;
 }
 
@@ -40,121 +38,32 @@ function clearRegisterValidationMessages () {
 }
 
 if (Meteor.isClient) {
+	Meteor.subscribe('allUserData');
 	Router.configure({layoutTemplate: 'MainLayout'});
-	Router.route('/', function () { /*this.layout('mainLayout');*/ this.render('home'); });
+	Router.route('/', function () {
+		/*this.layout('mainLayout');*/
+		this.render('home');
+	});
 	Router.route('/admin', function () {
-		// console.log('Meteor.user()', Meteor.user().username);
-
 		this.render('admin');
-
-		// if (!Meteor.userId()) {
-		// 	this.render('notAdminError');
-		// 	// this.redirect('/');
-		// 	setTimeout(function () {
-		// 		window.location.assign('/');
-		// 	}, 5000);
-		// } else {
-		// 	// console.log(Meteor.userId());
-		// 	// var isAdminResult;
-		// 	// Meteor.call('isCurrentUserAdmin', function(error, result) {
-		// 	// 	console.log('isCurrentUserAdmin result', result);
-		// 	// 	isAdminResult = result;
-		// 	// });
-		// 	// console.log('isAdminResult after call', isAdminResult);
-		// 	this.render('admin');
-		// }
-
-
-
-		// Meteor.call('isCurrentUserAdmin',function (error, isAdmin) {
-		// 	// console.log('isAdmin', isAdmin);
-		// 	if (isAdmin) {
-		// 		this.render('admin');
-		// 	} else {
-		// 		this.render('notAdminError');
-		// 		// this.redirect('/');
-		// 		setTimeout(function () {
-		// 			window.location.assign('/');
-		// 		}, 5000);
-		// 	}
-		// });
 	});
 	Router.route('/admin/users', function () {
 		this.render('userslist');
-		// if (!Meteor.userId()) {
-		// 	this.render('error');
-		// } else {
-		// 	this.render('userslist');
-		// }
 	});
-	// Router.onBeforeAction(function() {
-	// 	if (! Meteor.userId()) {
-	// 		this.render('home');
-	// 	} else {
-	// 		this.next();
-	// 	}
-	// });
-	// Router.onBeforeAction(function() {
-	// 	Meteor.call('isCurrentUserAdmin', function(error, result) {
-	// 		console.log('onBeforeAction isCurrentUserAdmin result', result);
-	// 		// isAdminResult = result;
-	// 	});
-	// 	console.log('oba next');
-	// 	this.next();
-	// });
 
 	Router.onBeforeAction(function () {
-		console.log('Router.onBeforeAction');
+		// console.log('Router.onBeforeAction');
 		if ( Meteor.userId() && Meteor.user() && Meteor.user().profile && Meteor.user().profile.isAdmin === true ) {
-			console.log('user is admin... yay!!!');
-			// console.log('Meteor user', Meteor.user().profile);
+			// console.log('user is admin... yay!!!');
 			this.next();
 		} else if ( Meteor.userId() && !Meteor.user() ) {
-			console.log('has userid, but not user');
-			this.render('notAdminError');
+			// console.log('has userid, but not user');
+			this.render('loading');
 		} else {
-			console.log('not logged in, or not admin');
+			// console.log('not logged in, or not admin');
 			this.render('notAdminError');
 		}
-	}, { only: ['admin'] });
-
-	// Router.onRun(function () {
-	// 	if ( Meteor.userId() ) {
-	// 		console.log( 'run' );
-	// 		this.next();
-	// 	} else {
-	// 		// console.log('run not admin');
-	// 		this.render('notAdminError');
-	// 	}
-	// }, { only: ['admin'] });
-	// Router.onRerun(function () {
-	// 	if ( Meteor.userId() ) {
-	// 		console.log( 'rerun' );
-	// 		this.next();
-	// 	} else {
-	// 		// console.log('rerun not admin');
-	// 		this.render('notAdminError');
-	// 	}
-	// }, { only: ['admin'] });
-
-	// Meteor.subscribe('userDataT');
-	// console.log('user: ', Meteor.user());
-	// Meteor.subscribe('userAdminStatus');
-	// Meteor.call('isCurrentUserAdmin',function (error, isAdmin) {
-	// 	// console.log('isAdmin', isAdmin);
-	// 	Router.route('/admin', function () {
-	// 		if (isAdmin) {
-	// 			this.render('admin');
-	// 		} else {
-
-	// 			this.render('notAdminError');
-	// 			// this.redirect('/');
-	// 			setTimeout(function () {
-	// 				window.location.assign('/');
-	// 			}, 5000);
-	// 		}
-	// 	});
-	// });
+	}, { only: ['admin', 'admin.users'] });
 
 	Template.mainLayout.events({
 		'click .loginButton': function (event, target) {
@@ -224,7 +133,7 @@ if (Meteor.isClient) {
 				Meteor.loginWithPassword(loginUserName, loginPassword, function (err) {
 					if (err) {
 						// Login failed.
-						console.log('login failed. Error: ', err);
+						// console.log('login failed. Error: ', err);
 						Session.set('loginMainErrMessage', err.reason);
 					} else {
 						// User logged in.
@@ -346,7 +255,7 @@ if (Meteor.isClient) {
 				}, function (err) {
 					if (err) {
 						// Inform the user that the account creation failed
-						console.log('registration failed Error: ', err.reason);
+						// console.log('registration failed Error: ', err.reason);
 						Session.set('registerMainErrMessage', err.reason);
 					} else {
 						// Success. Account has been created and logged in.
@@ -365,6 +274,12 @@ if (Meteor.isClient) {
 				});
 			}
 			return false;
+		}
+	});
+
+	Template.userslist.helpers({
+		'usersL': function() {
+			return Meteor.users.find();
 		}
 	});
 
@@ -403,7 +318,7 @@ if (Meteor.isServer) {
 					firstname: 'Joe',
 					lastname: 'Bell',
 					isAdmin: true,
-					canCreateAdminAccount: true
+					canUpsertAdminAccount: true
 				}
 			});
 		}
@@ -423,6 +338,14 @@ if (Meteor.isServer) {
 	// 	}
 	// });
 
+	Meteor.publish('allUserData', function () {
+		if (this.userId) {
+			var allUsers = Meteor.users.find({});
+			// console.log(allUsers);
+			return allUsers;
+		}
+	});
+
 	Meteor.methods({
 		createNewUser: function (options) {
 			Accounts.createUser(options);
@@ -438,8 +361,8 @@ if (Meteor.isServer) {
 	});
 
 	Accounts.onCreateUser(function(options, user) {
-		console.log('options profile', options.profile);
-		console.log('user profile', user.profile);
+		// console.log('options profile', options.profile);
+		// console.log('user profile', user.profile);
 
 		// user.profiles comes in as undefined so you should first take care of the options.profile first, then set 		user.profile = options.profile
 		// see http://docs.meteor.com/#/full/accounts_oncreateuser
@@ -451,6 +374,7 @@ if (Meteor.isServer) {
 		// }
 
 		if (options.profile) {
+			// TODO: make sure only special Admins can create other Admins
 			console.log(Meteor.user);
 			user.profile = options.profile;
 		}
