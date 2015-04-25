@@ -278,8 +278,12 @@ if (Meteor.isClient) {
 	});
 
 	Template.userslist.helpers({
-		'usersL': function() {
+		'usersList': function() {
 			return Meteor.users.find();
+		},
+		'isCurrentUser': function() {
+			console.log(this._id);
+			return Meteor.userId() === this._id;
 		}
 	});
 

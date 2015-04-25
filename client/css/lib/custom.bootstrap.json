@@ -6,11 +6,11 @@
   "type":                 true,
   "code":                 true,
   "grid":                 true,
-  "tables":               false,
+  "tables":               true,
   "forms":                true,
   "buttons":              true,
 
-  "glyphicons":           false,
+  "glyphicons":           true,
   "button-groups":        true,
   "input-groups":         true,
   "navs":                 true,

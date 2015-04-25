@@ -135,9 +135,48 @@ groupCollection: [
 		<h1>Users List</h1>
 		<p>You should see a list of users below.</p>
 		<p><a href="#" class="registerButton btn btn-primary" data-toggle="modal" data-target="#registerModal">Create New User</a></p>
-		{{#each usersL}}
-			<div>user: {{username}}</div>
-		{{/each}}
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>User</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>IsAdmin</th>
+					<th>Create Admin</th>
+					<th>Modify</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each usersList}}
+				<tr>
+					<td><strong class="visible-xs-inline">User: </strong>{{username}}</td>
+					<td><strong class="visible-xs-inline">First Name: </strong>{{profile.firstname}}</td>
+					<td><strong class="visible-xs-inline">Last Name: </strong>{{profile.lastname}}</td>
+					<td><strong class="visible-xs-inline">IsAdmin: </strong><span class="glyphicon {{#if profile.isAdmin}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></td>
+					<td><strong class="visible-xs-inline">Create Admins: </strong><span class="glyphicon {{#if profile.canUpsertAdminAccount}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></td>
+					<td><button class="btn btn-primary btn-xs" type="button">Edit</button>{{#unless isCurrentUser}} / <a class="text-danger" href="#"><span class="glyphicon glyphicon-trash"></span> Delete</a>{{/unless}}</td>
+				</tr>
+				{{/each}}
+			</tbody>
+		</table>
+		<!-- <div class="row hidden-xs">
+			<div class="col-sm-2"><strong>User</strong></div>
+			<div class="col-sm-2"><strong>First Name</strong></div>
+			<div class="col-sm-2"><strong>Last Name</strong></div>
+			<div class="col-sm-2"><strong>IsAdmin</strong></div>
+			<div class="col-sm-2"><strong>Create Admins</strong></div>
+			<div class="col-sm-1"><strong>ID</strong></div>
+		</div>
+		{{#each usersList}}
+		<div class="row">
+			<div class="col-sm-2"><strong class="visible-xs-inline">User: </strong>{{username}}</div>
+			<div class="col-sm-2"><strong class="visible-xs-inline">First Name: </strong>{{profile.firstname}}</div>
+			<div class="col-sm-2"><strong class="visible-xs-inline">Last Name: </strong>{{profile.lastname}}</div>
+			<div class="col-sm-2"><strong class="visible-xs-inline">IsAdmin: </strong><span class="glyphicon {{#if profile.isAdmin}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></div>
+			<div class="col-sm-2"><strong class="visible-xs-inline">Create Admins: </strong><span class="glyphicon {{#if profile.canUpsertAdminAccount}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></div>
+			<div class="col-sm-1">Edit{{#unless isCurrentUser}} Delete{{/unless}}</div>
+		</div>
+		{{/each}} -->
 	</div>
 </template>
 
