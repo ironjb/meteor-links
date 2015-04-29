@@ -287,8 +287,37 @@ if (Meteor.isClient) {
 		}
 	});
 
+	Template.userslist.events({
+		'click .deleteUser': function (event, target) {
+			event.preventDefault();
+			// console.log('this._id', this._id);
+			$('#confirmModal').on('show.bs.modal', function (event) {
+				console.log('on show');
+			});
+			$('#confirmModal').modal('show');
+
+			console.log('meteor remove call');
+			// Meteor.call('removeUser', this._id, function (error, result) {
+			// 	if (error) {
+			// 		console.log('Problem removing user account!');
+			// 	} else {
+			// 		console.log('Removed user');
+			// 	}
+			// });
+		}
+	});
+
+	Template.confirmModal.events({
+		'click #confirmModalOk': function (event, target) {
+			console.log('clicked OK');
+			console.log('event', event);
+			console.log('target', target);
+			console.log('this', this);
+		}
+	});
+
 	Accounts.ui.config({
-		passwordSignupFields: "USERNAME_ONLY"
+		passwordSignupFields: 'USERNAME_ONLY'
 	});
 
 	/*// counter starts at 0
@@ -353,6 +382,10 @@ if (Meteor.isServer) {
 	Meteor.methods({
 		createNewUser: function (options) {
 			Accounts.createUser(options);
+		},
+		removeUser: function (userId) {
+			console.log('remove user method', userId);
+			Meteor.users.remove(userId);
 		}
 		// , isCurrentUserAdmin: function() {
 		// 	if (Meteor.userId()) {

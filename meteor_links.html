@@ -121,6 +121,7 @@ groupCollection: [
 	</footer>
 	{{> loginModalTemplate}}
 	{{> registerModalTemplate}}
+	{{> confirmModal}}
 </template>
 
 <template name="admin">
@@ -154,7 +155,8 @@ groupCollection: [
 					<td><strong class="visible-xs-inline">Last Name: </strong>{{profile.lastname}}</td>
 					<td><strong class="visible-xs-inline">IsAdmin: </strong><span class="glyphicon {{#if profile.isAdmin}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></td>
 					<td><strong class="visible-xs-inline">Create Admins: </strong><span class="glyphicon {{#if profile.canUpsertAdminAccount}}glyphicon-ok-sign text-success{{else}}glyphicon-remove-sign text-danger{{/if}}"></span></td>
-					<td><button class="btn btn-primary btn-xs" type="button">Edit</button>{{#unless isCurrentUser}} / <a class="text-danger" href="#"><span class="glyphicon glyphicon-trash"></span> Delete</a>{{/unless}}</td>
+					<td><a class="text-primary" href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a>{{#unless isCurrentUser}} &nbsp; &nbsp; <a href="#" class="deleteUser text-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>{{/unless}}</td>
+					<!-- <td><button class="btn btn-primary btn-xs" type="button"><span class="glyphicon glyphicon-edit"></span> Edit</button>{{#unless isCurrentUser}} <button type="button" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>{{/unless}}</td> -->
 				</tr>
 				{{/each}}
 			</tbody>
@@ -295,6 +297,25 @@ groupCollection: [
 						<button type="submit" class="btn btn-primary">Register</button>
 					</div>
 				</form>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="confirmModal">
+	<div id="confirmModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Confirm:</h4>
+				</div>
+				<div class="modal-body">
+					<p>Confirm Message [can this be dynamic?]</p>
+					<div class="text-center">
+						<button id="confirmModalOk" class="btn btn-primary" type="button">OK</button>
+						<button id="confirmModalCancel" class="btn btn-danger" data-dismiss="modal" type="button">Cancel</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
