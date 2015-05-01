@@ -1,33 +1,33 @@
 
 
-function isValidUserName (username) {
+isValidUserName = function (username) {
 	var usernamePattern = /^([a-zA-Z])([a-zA-Z0-9_]{2,})*$/;
 	var usernameValid = usernamePattern.test(username);
 	return usernameValid;
 }
 
-function isValidName (name) {
+isValidName = function (name) {
 	var namePattern = /^[a-zA-Z ]{3,}$/;
 	var nameValid = namePattern.test(name);
 	return nameValid;
 }
 
-function isValidEmail (email) {
+isValidEmail = function (email) {
 	var emailPattern = /.+@.+\..+/i;
 	return emailPattern.test(email);
 }
 
-function isValidPassword (password) {
+isValidPassword = function (password) {
 	return password.length >= 6 ? true: false;
 }
 
-function clearLoginValidationMessages() {
+clearLoginValidationMessages = function () {
 	Session.set('loginMainErrMessage', null);
 	Session.set('loginUserNameMessage', null);
 	Session.set('loginPasswordMessage', null);
 }
 
-function clearRegisterValidationMessages () {
+clearRegisterValidationMessages = function () {
 	Session.set('registerMainErrMessage', null);
 	Session.set('registerUserNameMessage', null);
 	Session.set('registerFirstNameMessage', null);
@@ -36,6 +36,10 @@ function clearRegisterValidationMessages () {
 	Session.set('registerPasswordMessage', null);
 	Session.set('registerConfirmPasswordMessage', null);
 }
+
+sharedMethods = {
+	onConfirmModalOk: function() { console.log('not set'); }
+};
 
 if (Meteor.isClient) {
 	Meteor.subscribe('allUserData');
@@ -52,15 +56,11 @@ if (Meteor.isClient) {
 	});
 
 	Router.onBeforeAction(function () {
-		// console.log('Router.onBeforeAction');
 		if ( Meteor.userId() && Meteor.user() && Meteor.user().profile && Meteor.user().profile.isAdmin === true ) {
-			// console.log('user is admin... yay!!!');
 			this.next();
 		} else if ( Meteor.userId() && !Meteor.user() ) {
-			// console.log('has userid, but not user');
 			this.render('loading');
 		} else {
-			// console.log('not logged in, or not admin');
 			this.render('notAdminError');
 		}
 	}, { only: ['admin', 'admin.users'] });
@@ -68,7 +68,6 @@ if (Meteor.isClient) {
 	Template.mainLayout.events({
 		'click .loginButton': function (event, target) {
 			clearLoginValidationMessages();
-			// console.log('event', event, 'target', target);
 		},
 		'click .registerButton': function (event, target) {
 			clearRegisterValidationMessages();
@@ -98,7 +97,6 @@ if (Meteor.isClient) {
 
 			var loginUserName = event.target.loginUserName.value
 			, loginPassword = event.target.loginPassword.value;
-			// window.console.log && console.log(loginUserName, loginPassword);
 
 			// Validate fields here
 			var passedLoginFieldValidation = function () {
@@ -108,36 +106,29 @@ if (Meteor.isClient) {
 				Session.set('loginMainErrMessage', null);
 
 				if (!validUserName) {
-					// window.console.log && console.log('set message');
 					Session.set('loginUserNameMessage', 'Username is not valid!');
-					// return false;
 				} else {
 					Session.set('loginUserNameMessage', null);
 				}
 
 				if (!validPassword) {
 					Session.set('loginPasswordMessage', 'Password must be at least 6 characters long!');
-					// return false;
 				} else {
 					Session.set('loginPasswordMessage', null);
 				}
 
-				// window.console.log && console.log('passedLoginFieldValidation got to true');
 				return (validUserName && validPassword);
 			};
 
 			// If validation passes, supply the appropriate fields to the
 			// Meteor.loginWithPassword() function.
 			if (passedLoginFieldValidation()) {
-				// window.console.log && console.log('passedLoginFieldValidation');
 				Meteor.loginWithPassword(loginUserName, loginPassword, function (err) {
 					if (err) {
 						// Login failed.
-						// console.log('login failed. Error: ', err);
 						Session.set('loginMainErrMessage', err.reason);
 					} else {
 						// User logged in.
-						// console.log('successful login');
 						Session.set('loginMainErrMessage', null);
 						$('#loginModal').modal('hide');
 
@@ -178,16 +169,12 @@ if (Meteor.isClient) {
 	Template.registerModalTemplate.events({
 		'submit #registerForm': function (event, target) {
 			event.preventDefault();
-			// window.console.log && console.log('event', event, 'target', target);
-			// window.console.log && console.log(event.target.registerEmail.value);
-			// window.console.log && console.log(event.target.registerPassword.value);
 			var registerUserName = event.target.registerUserName.value
 			, registerFirstName = event.target.registerFirstName.value
 			, registerLastName = event.target.registerLastName.value
 			, registerEmail = event.target.registerEmail.value
 			, registerPassword = event.target.registerPassword.value
 			, registerConfirmPassword = event.target.registerConfirmPassword.value;
-			// window.console.log && console.log(registerUserName, registerFirstName, registerLastName, registerEmail, registerPassword, registerConfirmPassword);
 
 			// Validate fields here
 			var passedRegistrationValidation = function () {
@@ -197,7 +184,6 @@ if (Meteor.isClient) {
 				, validEmail = isValidEmail(registerEmail)
 				, validPassword = isValidPassword(registerPassword)
 				, passwordMatch = registerPassword === registerConfirmPassword;
-				// console.log('validUserName', validUserName);
 
 				Session.set('registerMainErrMessage', null);
 
@@ -255,11 +241,9 @@ if (Meteor.isClient) {
 				}, function (err) {
 					if (err) {
 						// Inform the user that the account creation failed
-						// console.log('registration failed Error: ', err.reason);
 						Session.set('registerMainErrMessage', err.reason);
 					} else {
 						// Success. Account has been created and logged in.
-						// console.log('yay... registration worked!');
 						Session.set('registerMainErrMessage', null);
 						$('#registerModal').modal('hide');
 
@@ -279,10 +263,11 @@ if (Meteor.isClient) {
 
 	Template.userslist.helpers({
 		'usersList': function() {
+			// returns the list of all users
 			return Meteor.users.find();
-		},
-		'isCurrentUser': function() {
-			console.log(this._id);
+		}
+		, 'isCurrentUser': function() {
+			// While going through the list of Users, if 'this' user is also the logged in user, it will return true.
 			return Meteor.userId() === this._id;
 		}
 	});
@@ -290,51 +275,53 @@ if (Meteor.isClient) {
 	Template.userslist.events({
 		'click .deleteUser': function (event, target) {
 			event.preventDefault();
-			// console.log('this._id', this._id);
-			$('#confirmModal').on('show.bs.modal', function (event) {
-				console.log('on show');
-			});
-			$('#confirmModal').modal('show');
+			var selectedUserId = this._id;
 
-			console.log('meteor remove call');
-			// Meteor.call('removeUser', this._id, function (error, result) {
-			// 	if (error) {
-			// 		console.log('Problem removing user account!');
-			// 	} else {
-			// 		console.log('Removed user');
-			// 	}
-			// });
+			Session.set('confirmModalMessage','Do you want to remove the selected user?');
+			sharedMethods.onConfirmModalOk = function() {
+				// console.log('remove user ok clicked');
+				Meteor.call('removeUser', selectedUserId, function (error, result) {
+					if (error) {
+						console.log('Problem removing user account!', error);
+					}
+				});
+			};
+
+			$('#confirmModal').modal('show');
+		}
+	});
+
+	// Initializes defaults for confirm modal
+	var confirmModalDefaults = EJSON.clone({ onConfirmModalOk: sharedMethods.onConfirmModalOk });
+	Session.set('confirmModalMessage','');
+
+	Template.confirmModal.helpers({
+		confirmMessage: function () {
+			return Session.get('confirmModalMessage');
 		}
 	});
 
 	Template.confirmModal.events({
 		'click #confirmModalOk': function (event, target) {
-			console.log('clicked OK');
-			console.log('event', event);
-			console.log('target', target);
-			console.log('this', this);
+			if(sharedMethods.onConfirmModalOk) {
+				// Executes the function passed
+				sharedMethods.onConfirmModalOk();
+			}
+			$('#confirmModal').modal('hide');
 		}
+	});
+
+	Template.confirmModal.onRendered(function () {
+		$('#confirmModal').on('hide.bs.modal', function (event) {
+			// Resets confirm modal settings to defaults
+			sharedMethods.onConfirmModalOk = confirmModalDefaults.onConfirmModalOk;
+			Session.set('confirmModalMessage','');
+		});
 	});
 
 	Accounts.ui.config({
 		passwordSignupFields: 'USERNAME_ONLY'
 	});
-
-	/*// counter starts at 0
-	Session.setDefault('counter', 0);
-
-	Template.home.helpers({
-		counter: function () {
-			return Session.get('counter');
-		}
-	});
-
-	Template.home.events({
-		'click button': function () {
-			// increment the counter when button is clicked
-			Session.set('counter', Session.get('counter') + 1);
-		}
-	});*/
 }
 
 if (Meteor.isServer) {
@@ -355,26 +342,11 @@ if (Meteor.isServer) {
 				}
 			});
 		}
-		// console.log('Meteor.user.find().count() =', Meteor.users.find().count());
 	});
-
-	// Meteor.publish('userDataT', function () {
-	// 	if (this.userId) {
-	// 		var thisUser = Meteor.users.find(
-	// 				{ _id: this.userId }
-	// 				, { fields: { username: 1, profile: 1 } }
-	// 			);
-	// 		// console.log(thisUser.fetch());
-	// 		return thisUser;
-	// 	} else {
-	// 		this.ready();
-	// 	}
-	// });
 
 	Meteor.publish('allUserData', function () {
 		if (this.userId) {
 			var allUsers = Meteor.users.find({});
-			// console.log(allUsers);
 			return allUsers;
 		}
 	});
@@ -384,35 +356,17 @@ if (Meteor.isServer) {
 			Accounts.createUser(options);
 		},
 		removeUser: function (userId) {
-			console.log('remove user method', userId);
 			Meteor.users.remove(userId);
 		}
-		// , isCurrentUserAdmin: function() {
-		// 	if (Meteor.userId()) {
-		// 		var isAdmin = Meteor.user().profile.isAdmin;
-		// 		console.log('isAdmin', isAdmin);
-		// 		return isAdmin;
-		// 	}
-		// 	return false;
-		// }
 	});
 
 	Accounts.onCreateUser(function(options, user) {
-		// console.log('options profile', options.profile);
-		// console.log('user profile', user.profile);
-
 		// user.profiles comes in as undefined so you should first take care of the options.profile first, then set 		user.profile = options.profile
 		// see http://docs.meteor.com/#/full/accounts_oncreateuser
 
-		// if (options.profile && user.profile.isAdmin) {
-		// 	user.profile.isAdmin = options.profile.isAdmin;
-		// } else {
-		// 	user.profile.isAdmin = false;
-		// }
-
 		if (options.profile) {
 			// TODO: make sure only special Admins can create other Admins
-			console.log(Meteor.user);
+			// console.log(Meteor.user()._id);
 			user.profile = options.profile;
 		}
 		return user;
