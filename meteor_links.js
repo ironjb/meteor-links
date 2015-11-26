@@ -261,6 +261,45 @@ if (Meteor.isClient) {
 		}
 	});
 
+	Template.editUserModalTemplate.helpers({
+		'selectedUser': function () {
+			return Session.get('editUserData');
+		},
+		'editUserMainErrMsg': function () {
+			return Session.get('editUserMainErrMessage');
+		},
+		'editUsernameMsg': function () {
+			return Session.get('editUsernameMessage');
+		},
+		'editFirstNameMsg': function () {
+			return Session.get('editFirstNameMessage');
+		},
+		'editLastNameMsg': function () {
+			return Session.get('editLastNameMessage');
+		},
+		'editEmailMsg': function () {
+			return Session.get('editEmailMessage');
+		},
+		'editPasswordMsg': function () {
+			return Session.get('editPasswordMessage');
+		},
+		'editConfirmPasswordMsg': function () {
+			return Session.get('editConfirmPasswordMessage');
+		}
+	});
+
+	Template.editUserModalTemplate.events({
+		'submit #editUserForm': function (event, target) {
+			event.preventDefault();
+			var editUsername = event.target.editUsername.value
+			, editFirstName = event.target.editFirstName.value
+			, editLastName = event.target.editLastName.value
+			, editEmail = event.target.editEmail.value
+			, editPassword = event.target.editPassword.value
+			, editConfirmPassword = event.target.editConfirmPassword.value;
+		}
+	});
+
 	Template.userslist.helpers({
 		'usersList': function() {
 			// returns the list of all users
@@ -289,19 +328,39 @@ if (Meteor.isClient) {
 
 			$('#confirmModal').modal('show');
 		}
+		, 'click .editUser': function (event, target) {
+			window.console && console.log('user edit click');
+			event.preventDefault();
+			var selectedUserId = this._id;
+
+			// Session.set('selectedUser', selectedUser);
+
+			Meteor.call('getUser', selectedUserId, function (error, result) {
+				window.console && console.log('error', error);
+				window.console && console.log('result', result);
+				if (error) {
+					window.console && console.log('Error', error);
+				} else {
+					// var selectedUser = result;
+					Session.set('editUserData', result);
+				}
+			});
+
+			$('#editUserModal').modal('show');
+		}
 	});
 
 	// Initializes defaults for confirm modal
 	var confirmModalDefaults = EJSON.clone({ onConfirmModalOk: sharedMethods.onConfirmModalOk });
 	Session.set('confirmModalMessage','');
 
-	Template.confirmModal.helpers({
+	Template.confirmModalTemplate.helpers({
 		confirmMessage: function () {
 			return Session.get('confirmModalMessage');
 		}
 	});
 
-	Template.confirmModal.events({
+	Template.confirmModalTemplate.events({
 		'click #confirmModalOk': function (event, target) {
 			if(sharedMethods.onConfirmModalOk) {
 				// Executes the function passed
@@ -311,7 +370,7 @@ if (Meteor.isClient) {
 		}
 	});
 
-	Template.confirmModal.onRendered(function () {
+	Template.confirmModalTemplate.onRendered(function () {
 		$('#confirmModal').on('hide.bs.modal', function (event) {
 			// Resets confirm modal settings to defaults
 			sharedMethods.onConfirmModalOk = confirmModalDefaults.onConfirmModalOk;
@@ -354,6 +413,16 @@ if (Meteor.isServer) {
 	Meteor.methods({
 		createNewUser: function (options) {
 			Accounts.createUser(options);
+		},
+		getUser: function (userId) {
+			var user;
+			var userArray = Meteor.users.find({_id: userId}).fetch();
+			if (userArray.length === 1) {
+				user = userArray[0];
+			} else {
+				user = 'error';
+			}
+			return user;
 		},
 		removeUser: function (userId) {
 			Meteor.users.remove(userId);
