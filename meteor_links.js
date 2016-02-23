@@ -37,7 +37,7 @@ clearRegisterValidationMessages = function () {
 	Session.set('registerConfirmPasswordMessage', null);
 }
 
-sharedMethods = {
+var sharedMethods = {
 	onConfirmModalOk: function() { console.log('not set'); }
 };
 
@@ -55,6 +55,28 @@ if (Meteor.isClient) {
 		this.render('userslist');
 	});
 
+	/*// Check to see if account login is expired
+	Router.onBeforeAction(function () {
+		// var accountToken = Accounts._storedLoginToken();
+		// var userId = Meteor.userId();
+		Meteor.call('expiredUserCheck', null, function (error, result) {
+			// window.console && console.log(Accounts._storedLoginToken());
+			window.console && console.log('result', result);
+			// window.console && console.log('error', error);
+			// window.console && console.log('lastSessionId', Meteor.default_connection._lastSessionId);
+			// window.console && console.log('connection', Meteor.connection);
+			// Meteor.setInterval(function () {
+			// 	window.console && console.log(Meteor.status());
+			// }, 2000);
+			// window.console && console.log('accountToken', accountToken, '\nuserId', userId);
+			if (result) {
+				Meteor.logout();
+			}
+		});
+		this.next();
+	});*/
+
+	// Limit access to admin section
 	Router.onBeforeAction(function () {
 		if ( Meteor.userId() && Meteor.user() && Meteor.user().profile && Meteor.user().profile.isAdmin === true ) {
 			this.next();
@@ -76,6 +98,14 @@ if (Meteor.isClient) {
 			Meteor.logout(function (err) {
 				Router.go('/');
 			});
+		},
+		'click .logoutOtherClientsButton': function (event, target) {
+			Meteor.logoutOtherClients(function (err) {
+				window.console && console.log('logged out other clients');
+			});
+		},
+		'click .closeNav': function (event, target) {
+			$('#navbar').collapse('hide');
 		}
 	});
 
@@ -377,13 +407,19 @@ if (Meteor.isClient) {
 			Session.set('confirmModalMessage','');
 		});
 	});
-
-	Accounts.ui.config({
-		passwordSignupFields: 'USERNAME_ONLY'
-	});
 }
 
+// Meteor.startup(function () {
+	Accounts.config({
+		loginExpirationInDays: 0.02
+	});
+// });
+
 if (Meteor.isServer) {
+	// AccountsServer.accountsClientOrServer.config({
+	// 	loginExpirationInDays: 1
+	// });
+
 	Meteor.startup(function () {
 		// code to run on server at startup
 		var userCount = Meteor.users.find().count();
@@ -413,8 +449,8 @@ if (Meteor.isServer) {
 	Meteor.methods({
 		createNewUser: function (options) {
 			Accounts.createUser(options);
-		},
-		getUser: function (userId) {
+		}
+		, getUser: function (userId) {
 			var user;
 			var userArray = Meteor.users.find({_id: userId}).fetch();
 			if (userArray.length === 1) {
@@ -423,10 +459,40 @@ if (Meteor.isServer) {
 				user = 'error';
 			}
 			return user;
-		},
-		removeUser: function (userId) {
+		}
+		, removeUser: function (userId) {
 			Meteor.users.remove(userId);
 		}
+		/**
+		 * was going to use for auto logout, decided to go with Accounts.config({'loginExpirationInDays : 1'})
+		 * may return and finish this since the 'loginTokens' array in the users table seems to keep growing.
+		 * @return {bool} was user logged out
+		 */
+		/*, expiredUserCheck: function() {
+			var self = this;
+			var isExpiredUser = false;
+			// console.log('userId:\n', userId);
+			// console.log('accountToken:\n', accountToken);
+			// var hashToken = Accounts._hashStampedToken(accountToken);
+			// var user = Meteor.users.find({ _id: userId });
+			// console.log(Meteor.user());
+			// console.log('self.connection.id\n\t', self.connection.id);
+			var currentToken = Accounts._getLoginToken(self.connection.id);
+			console.log('currentToken\n', currentToken);
+			console.log('userid', Meteor.userId());
+			if (Meteor.userId()){
+				console.log('user logged in');
+				// var lastLoginTime = Meteor.user().services;
+				// console.log('\n\n lastLoginTime\n', lastLoginTime);
+				// console.log('\n\n\nMeteor.user()\n', Meteor.user());
+				// console.log('\n\n\nAccounts\n', Accounts);
+				// console.log('\n\n\nMeteor.default_connection._lastSessionId\n', Meteor.default_connection._lastSessionId);
+			} else {
+				isExpiredUser = true;
+				// Meteor.logout();
+			}
+			return isExpiredUser;
+		}*/
 	});
 
 	Accounts.onCreateUser(function(options, user) {
